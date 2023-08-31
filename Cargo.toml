@@ -1,0 +1,29 @@
+[package]
+name = "m61-modulus"
+description = "Functions for performing arithmetic modulo the 61st Mersenne number. Aimed at testing bignum implementations."
+version = "0.1.0"
+edition = "2021"
+
+authors = ["Tobias Decking"]
+readme = "README.md"
+license = "MIT OR Apache-2.0"
+repository = "https://www.github.com/TDecking/m61-modulus"
+
+keywords = ["bignum", "bigint", "mathematics"]
+categories = ["algorithms", "mathematics", "no-std"]
+
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+cfg-if = "1.0.0"
+
+
+[dev-dependencies]
+quickcheck = "1.0.3"
+
+
+[features]
+default = ["std"]
+std = []
+nightly = []

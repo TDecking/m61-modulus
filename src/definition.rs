@@ -217,7 +217,12 @@ make_arith_impl!(Add, AddAssign, add, add_assign, +, |a, b| {
     }
 });
 make_arith_impl!(Sub, SubAssign, sub, sub_assign, -, |a, b| {
-    a + MODULUS - b
+    let x = a + MODULUS - b;
+    if x >= MODULUS {
+        x - MODULUS
+    } else {
+        x
+    }
 });
 make_arith_impl!(Mul, MulAssign, mul, mul_assign, *, |a, b| {
     let x = a as u128 * b as u128;
@@ -297,5 +302,67 @@ impl<'a> iter::Product<&'a M61> for M61 {
     #[must_use]
     fn product<I: Iterator<Item = &'a Self>>(iter: I) -> Self {
         iter.fold(Self(1), |a, b| a * b)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::M61;
+    use super::MODULUS;
+
+    quickcheck::quickcheck! {
+        fn creation_u64_correct(x: u64) -> bool {
+            let expected = x % MODULUS;
+            let actual = M61::from(x).get();
+            expected == actual
+        }
+
+        fn creation_u128_correct(x: u128) -> bool {
+            let expected = (x % MODULUS as u128) as u64;
+            let actual = M61::from(x).get();
+            expected == actual
+        }
+
+        fn creation_i64_correct(x: i64) -> bool {
+            let expected = x.rem_euclid(MODULUS as i64) as u64;
+            let actual = M61::from(x).get();
+            expected == actual
+        }
+
+        fn creation_i128_correct(x: i128) -> bool {
+            let expected = x.rem_euclid(MODULUS as i128) as u64;
+            let actual = M61::from(x).get();
+            expected == actual
+        }
+
+        fn add_distributive(x: u64, y: u64) -> bool {
+            let x = x >> 1;
+            let y = y >> 1;
+
+            let expected = M61::from(x + y);
+            let actual = M61::from(x) + M61::from(y);
+
+            expected == actual
+        }
+
+        fn sub_distributive(x: u64, y: u64) -> bool {
+            let x = (x >> 1) as i64;
+            let y = (y >> 1) as i64;
+
+            let expected = M61::from(x - y);
+            let actual = M61::from(x) - M61::from(y);
+
+            expected == actual
+        }
+
+        fn mul_distributive(x: u64, y: u64) -> bool {
+            let x = x as u128;
+            let y = y as u128;
+
+            let expected = M61::from(x * y);
+            let actual = M61::from(x) * M61::from(y);
+
+            expected == actual
+        }
     }
 }

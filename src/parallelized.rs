@@ -39,7 +39,7 @@ fn clamp_thread_count(max_thread_count: usize) -> usize {
         .max(1)
 }
 
-/// Helper macro for the creation of the implementations.
+/// A helper macro for the creation of the implementations.
 macro_rules! make_function {
     ($name:ident, $type:ty) => {
         pub fn $name(mut s: &[$type], max_thread_count: usize) -> M61 {

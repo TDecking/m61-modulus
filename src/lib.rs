@@ -2,7 +2,7 @@
 //! Aimed at testing bignum implementations.
 //!
 //! ## Usage
-//! 
+//!
 //! The crate comes with a trait [`M61Reduction`] and a type [`M61`].
 //! `M61` is an integer in which all arithmetic is performed the
 //! 61st Mersenne number, `2^61 - 1`.
@@ -15,17 +15,17 @@
 //!
 //! assert_eq!(x, y);
 //! ```
-//! 
+//!
 //! The trait `M61Reduction` is implemented for unsigned integer slices,
 //! providing two functions for reducing the modulo `2^61 - 1`,
 //! as if they were digits in a bignum implementation.
-//! 
+//!
 //! ```
 //! use m61_modulus::*;
 //!
 //! let x = [1u16, 734u16, 24u16].reduce_m61();
 //! let y = M61::from(1) + M61::from(734 << 16) + M61::from(24u64 << 32);
-//! 
+//!
 //! assert_eq!(x, y);
 //! ```
 //!
@@ -86,15 +86,15 @@ mod parallelized;
 
 pub use crate::definition::M61;
 
-/// Helper trait for making the fuctions accessible using the dot operator.
+/// A helper trait for making the functions accessible using the dot operator.
 pub trait M61Reduction {
     /// Calculates `self mod (2^61 - 1)`, assuming `self` is a number
-    /// base `2^Self::BITS`, with digits stored in little-edian ordering.
+    /// base `2^Self::BITS`, with digits stored in little-endian ordering.
     #[must_use]
     fn reduce_m61(&self) -> M61;
 
     /// Calculates `self mod (2^61 - 1)`, assuming `self` is a number
-    /// base `2^Self::BITS`, with digits stored in little-edian ordering.
+    /// base `2^Self::BITS`, with digits stored in little-endian ordering.
     ///
     /// This function is parallelized, using at most `max_thread_count`
     /// threads to calculate the result.
@@ -203,9 +203,15 @@ impl M61Reduction for [usize] {
             use core::slice::from_raw_parts;
             let (ptr, len) = (self.as_ptr(), self.len());
             match core::mem::size_of::<usize>() {
-                2 => from_raw_parts(ptr as *const u16, len).reduce_m61_parallelized(max_thread_count),
-                4 => from_raw_parts(ptr as *const u32, len).reduce_m61_parallelized(max_thread_count),
-                8 => from_raw_parts(ptr as *const u64, len).reduce_m61_parallelized(max_thread_count),
+                2 => {
+                    from_raw_parts(ptr as *const u16, len).reduce_m61_parallelized(max_thread_count)
+                }
+                4 => {
+                    from_raw_parts(ptr as *const u32, len).reduce_m61_parallelized(max_thread_count)
+                }
+                8 => {
+                    from_raw_parts(ptr as *const u64, len).reduce_m61_parallelized(max_thread_count)
+                }
                 _ => unreachable!("an address has only 16, 32 or 64 bits"),
             }
         }

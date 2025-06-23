@@ -48,7 +48,7 @@ impl M61 {
 
         while exp != 1 {
             if exp & 1 != 0 {
-                acc = acc * self;
+                acc *= self;
             }
 
             exp /= 2;
@@ -59,8 +59,7 @@ impl M61 {
     }
 }
 
-/// Helper macro for the quick generation
-/// of formatting trait implementations.
+/// A helper macro for the quick generation of formatting trait implementations.
 macro_rules! make_fmt_impl {
     ($trait:ident) => {
         impl fmt::$trait for M61 {
@@ -81,19 +80,17 @@ make_fmt_impl!(UpperHex);
 make_fmt_impl!(Octal);
 make_fmt_impl!(Binary);
 
-/// Helper macro for generation of [`From`] implementations
+/// A helper macro for generation of [`From`] implementations
 /// where the numerical bounds of the source type are smaller
 /// than the modulus.
 macro_rules! make_trivial_from {
     ($type:ty) => {
         impl From<$type> for M61 {
             #[inline(always)]
-            #[must_use]
             fn from(value: $type) -> Self {
-                // rustc warns us against this seemingly
-                // useless comparison whenever the argument is
-                // an unsigned type. The macro works properly for those
-                // types, which means that the warning can be disabled.
+                // rustc warns us against this seemingly useless comparison
+                // whenever the argument is an unsigned integer. The macro is also
+                // used on signed integer types, making the comparison neccessary.
                 #[allow(unused_comparisons)]
                 if value < 0 {
                     Self((value as i64 + MODULUS as i64) as u64)
@@ -114,7 +111,6 @@ make_trivial_from!(usize);
 #[cfg(target_pointer_width = "64")]
 impl From<usize> for M61 {
     #[inline(always)]
-    #[must_use]
     fn from(value: usize) -> Self {
         Self::from(value as u64)
     }
@@ -129,7 +125,6 @@ make_trivial_from!(isize);
 #[cfg(target_pointer_width = "64")]
 impl From<isize> for M61 {
     #[inline(always)]
-    #[must_use]
     fn from(value: isize) -> Self {
         Self::from(value as i64)
     }
@@ -137,7 +132,6 @@ impl From<isize> for M61 {
 
 impl From<u64> for M61 {
     #[inline]
-    #[must_use]
     fn from(value: u64) -> Self {
         let tmp = (value & MODULUS) + (value >> 61);
         if tmp >= MODULUS {
@@ -150,7 +144,6 @@ impl From<u64> for M61 {
 
 impl From<i64> for M61 {
     #[inline]
-    #[must_use]
     fn from(mut value: i64) -> Self {
         if value < 0 {
             value = value.wrapping_add(4 * MODULUS as i64);
@@ -165,7 +158,6 @@ impl From<i64> for M61 {
 
 impl From<u128> for M61 {
     #[inline]
-    #[must_use]
     fn from(value: u128) -> Self {
         let mut x = value as u64 & MODULUS;
         x += (value >> 61) as u64 & MODULUS;
@@ -176,7 +168,6 @@ impl From<u128> for M61 {
 
 impl From<i128> for M61 {
     #[inline]
-    #[must_use]
     fn from(mut value: i128) -> Self {
         while value < 0 {
             value += 16 * ((1 << 122) - 1);
@@ -186,15 +177,13 @@ impl From<i128> for M61 {
     }
 }
 
-/// Helper macro for the quick implementation
-/// of arithmetic operators.
+/// A helper macro for the quick implementation of arithmetic operators.
 macro_rules! make_arith_impl {
     ($trait:ident, $trait_assign:ident, $func:ident, $func_assign:ident, $op:tt, $impl:expr) => {
         impl ops::$trait for M61 {
             type Output = Self;
 
             #[inline]
-            #[must_use]
             fn $func(self, rhs: Self) -> Self::Output {
                 #[allow(clippy::redundant_closure_call)]
                 Self($impl(self.0, rhs.0))
@@ -205,7 +194,6 @@ macro_rules! make_arith_impl {
             type Output = Self;
 
             #[inline(always)]
-            #[must_use]
             fn $func(self, rhs: &Self) -> Self::Output {
                 self $op *rhs
             }
@@ -260,8 +248,7 @@ make_arith_impl!(Div, DivAssign, div, div_assign, /, |a, b| {
         panic!("attempt to divide by zero");
     }
 
-    // Calculate the multiplicative inverse
-    // using the extended Euclidean algorithm.
+    // Calculate the multiplicative inverse using the extended Euclidean algorithm.
     // (https://en.wikipedia.org/wiki/Extended_Euclidean_algorithm)
 
     let mut r0 = MODULUS;
@@ -294,7 +281,6 @@ make_arith_impl!(Div, DivAssign, div, div_assign, /, |a, b| {
 
 impl iter::Sum for M61 {
     #[inline(always)]
-    #[must_use]
     fn sum<I: Iterator<Item = Self>>(iter: I) -> Self {
         iter.fold(Self(0), |a, b| a + b)
     }
@@ -302,7 +288,6 @@ impl iter::Sum for M61 {
 
 impl<'a> iter::Sum<&'a M61> for M61 {
     #[inline(always)]
-    #[must_use]
     fn sum<I: Iterator<Item = &'a Self>>(iter: I) -> Self {
         iter.fold(Self(0), |a, b| a + b)
     }
@@ -310,7 +295,6 @@ impl<'a> iter::Sum<&'a M61> for M61 {
 
 impl iter::Product for M61 {
     #[inline(always)]
-    #[must_use]
     fn product<I: Iterator<Item = Self>>(iter: I) -> Self {
         iter.fold(Self(1), |a, b| a * b)
     }
@@ -318,7 +302,6 @@ impl iter::Product for M61 {
 
 impl<'a> iter::Product<&'a M61> for M61 {
     #[inline(always)]
-    #[must_use]
     fn product<I: Iterator<Item = &'a Self>>(iter: I) -> Self {
         iter.fold(Self(1), |a, b| a * b)
     }

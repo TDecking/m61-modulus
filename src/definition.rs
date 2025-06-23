@@ -38,6 +38,25 @@ impl M61 {
     pub const fn get(self) -> u64 {
         self.0
     }
+
+    /// Raises `self` to the power of `exp`, using exponentiation by squaring.
+    pub fn pow(mut self, mut exp: u64) -> Self {
+        if exp == 0 {
+            return Self(1);
+        }
+        let mut acc = Self(1);
+
+        while exp != 1 {
+            if exp & 1 != 0 {
+                acc = acc * self;
+            }
+
+            exp /= 2;
+            self = self * self;
+        }
+
+        acc * self
+    }
 }
 
 /// Helper macro for the quick generation

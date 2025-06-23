@@ -24,7 +24,7 @@
 //! the original algorithm, binary shifts and masking changes accordingly.
 
 cfg_if::cfg_if! {
-    if #[cfg(any(target_arch = "x86", target_arch = "x86_64"))] {
+    if #[cfg(target_arch = "x86_64")] {
         // 1. If nightly features are enabled, and the avx512f target feature
         //    is available by default, use the avx512 version directly.
         // 2. If the avx512 version can't be used directly, and the avx2
@@ -55,7 +55,7 @@ cfg_if::cfg_if! {
             all(not(feature = "nightly"), not(target_feature = "avx2")),
         ))]
         pub(crate) use x86_lookup::*;
-    } else if #[cfg(any(target_arch = "arm", target_arch = "aarch64"))] {
+    } else if #[cfg(target_arch = "aarch64")] {
         mod neon;
 
         pub(crate) use neon::*;

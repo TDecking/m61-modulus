@@ -63,9 +63,7 @@ cfg_if::cfg_if! {
         not(miri),
         target_endian = "little",
         any(
-            all(target_arch = "x86", target_feature = "sse2"),
             target_arch = "x86_64",
-            all(feature = "nightly", target_arch = "arm", target_feature = "neon"),
             target_arch = "aarch64",
             all(target_family = "wasm", target_feature = "simd128"),
         ),

@@ -3,7 +3,7 @@ use core::arch::wasm32::*;
 #[cfg(all(target_arch = "wasm64", target_feature = "simd128"))]
 use core::arch::wasm64::*;
 
-use crate::definition::{final_reduction, M61, MODULUS};
+use crate::definition::{M61, MODULUS, final_reduction};
 
 unsafe fn reduction_core(ptr: *const v128, mut len: usize, mut hi: v128) -> M61 {
     let mlo = u64x2_splat(MODULUS as i64);

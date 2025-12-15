@@ -52,7 +52,6 @@
 //! * Its difference of one to the next power of two makes calcuations incredibly cheap.
 
 #![allow(unsafe_op_in_unsafe_fn)]
-
 #![cfg_attr(feature = "nightly", feature(avx512_target_feature, stdsimd))]
 #![cfg_attr(not(feature = "std"), no_std)]
 

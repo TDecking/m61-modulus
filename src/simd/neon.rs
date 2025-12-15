@@ -3,7 +3,7 @@ use core::arch::aarch64::*;
 #[cfg(target_arch = "arm")]
 use core::arch::arm::*;
 
-use crate::definition::{final_reduction, M61, MODULUS};
+use crate::definition::{M61, MODULUS, final_reduction};
 
 #[target_feature(enable = "neon")]
 unsafe fn reduction_core(ptr: *const uint64x2_t, mut len: usize, mut hi: uint64x2_t) -> M61 {

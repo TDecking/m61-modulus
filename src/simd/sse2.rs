@@ -3,7 +3,7 @@ use core::arch::x86::*;
 #[cfg(target_arch = "x86_64")]
 use core::arch::x86_64::*;
 
-use crate::definition::{final_reduction, M61, MODULUS};
+use crate::definition::{M61, MODULUS, final_reduction};
 
 #[target_feature(enable = "sse2")]
 unsafe fn reduction_core(ptr: *const __m128i, mut len: usize, mut hi: __m128i) -> M61 {

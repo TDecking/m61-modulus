@@ -27,7 +27,7 @@
 //! together into a 64-bit integer, making the algorithm applicable to
 //! other numerical bases.
 
-use crate::definition::{final_reduction, M61, MODULUS};
+use crate::definition::{M61, MODULUS, final_reduction};
 
 pub(crate) fn reduce_u8(s: &[u8]) -> M61 {
     let chuncks = s.chunks_exact(8);
